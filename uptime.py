@@ -42,7 +42,7 @@ def parse_sites():
 			site = 'http://' + site
 			print(site)
 			try:
-				r = requests.get(site)
+				r = requests.get(site, timeout=5)
 				print(site, 'status code is: ', r.status_code)
 				if r.status_code != 200:
 					site_down =(site, r.status_code)
@@ -50,6 +50,8 @@ def parse_sites():
 				time.sleep(3)
 			except requests.exceptions.RequestException as e: 
 				print(e)
+				site_error = (site, 'Timed out')
+				sites_errors.append(site_error)
 				continue
 
 		else:
@@ -62,9 +64,10 @@ def parse_sites():
 			time.sleep(3)
 
 	print(sites_errors)
-	return sites_errors
 
-def send_mail(sites_errors):
+	Mail_alert(sites_errors)
+
+def Mail_alert(sites_errors):
 
 	subject = 'Site errors report'
 
